@@ -6,6 +6,7 @@ import { MaintenanceBanner } from "@/components/maintenance-banner";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { OnboardingFlow } from "@/components/onboarding";
 import { PageTransition } from "@/components/page-transition";
+import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 
 import "./globals.css";
 
@@ -58,6 +59,7 @@ export default function RootLayout({
               Built for transparent policy creation, automated claims, and multilingual access.
             </footer>
           </div>
+          <MobileBottomNav />
         </LanguageProvider>
       </body>
     </html>
