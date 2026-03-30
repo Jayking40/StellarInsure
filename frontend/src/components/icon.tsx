@@ -14,7 +14,11 @@ export type IconName =
   | "wallet"
   | "arrow-up-right"
   | "chevron-down"
-  | "chevron-up";
+  | "chevron-up"
+  | "help"
+  | "refresh"
+  | "plus"
+  | "close";
 
 type IconSize = "sm" | "md" | "lg";
 type IconTone =
@@ -143,6 +147,37 @@ function getPath(name: IconName) {
       return <path d="m6 9 6 6 6-6" />;
     case "chevron-up":
       return <path d="m6 15 6-6 6 6" />;
+    case "help":
+      return (
+        <>
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <path d="M12 17h.01" />
+        </>
+      );
+    case "refresh":
+      return (
+        <>
+          <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+          <path d="M21 3v5h-5" />
+          <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+          <path d="M3 21v-5h5" />
+        </>
+      );
+    case "plus":
+      return (
+        <>
+          <path d="M12 5v14" />
+          <path d="M5 12h14" />
+        </>
+      );
+    case "close":
+      return (
+        <>
+          <path d="M18 6 6 18" />
+          <path d="M6 6l12 12" />
+        </>
+      );
   }
 }
 
