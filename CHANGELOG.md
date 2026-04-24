@@ -1,3 +1,13 @@
+# [1.4.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.3.0...v1.4.0) (2026-04-24)
+
+
+### Features
+
+* **analytics:** integrate date range picker with preset shortcuts into dashboard ([5d2aa04](https://github.com/ChaoLing140/StellarInsure/commit/5d2aa04bc4cd9e5c56045680976ec1047540b083))
+* **claims:** add payout breakdown component with line items and status badge ([53b285b](https://github.com/ChaoLing140/StellarInsure/commit/53b285b6a656a3f5d7c4df53cdb1ace957226163))
+* **claims:** implement claim submission form with evidence inputs and preview ([6743314](https://github.com/ChaoLing140/StellarInsure/commit/674331467d53d0ce54a96c4151e3bcd571dc4169))
+* **pools:** add risk pool deposit flow with multi-step UI and utilization display ([6ee8b55](https://github.com/ChaoLing140/StellarInsure/commit/6ee8b55b49e7e65648699b977d72ae8071d94b30))
+
 # [1.3.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.2.0...v1.3.0) (2026-04-24)
 
 
