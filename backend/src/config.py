@@ -65,6 +65,11 @@ class Settings(BaseSettings):
     # Logging
     log_level: str = "INFO"
 
+    # Feature flags
+    feature_flag_oracle_v2: bool = False
+    feature_flag_claim_auto_approval: bool = False
+    feature_flag_pool_rebalancing: bool = False
+
     @field_validator("environment")
     @classmethod
     def validate_environment(cls, v: str) -> str:
@@ -102,6 +107,14 @@ class Settings(BaseSettings):
     @property
     def is_production(self) -> bool:
         return self.environment == "production"
+
+    @property
+    def feature_flags(self) -> dict:
+        return {
+            "oracle_v2": self.feature_flag_oracle_v2,
+            "claim_auto_approval": self.feature_flag_claim_auto_approval,
+            "pool_rebalancing": self.feature_flag_pool_rebalancing,
+        }
 
     def log_settings(self) -> None:
         """Log non-sensitive settings on startup for debugging."""

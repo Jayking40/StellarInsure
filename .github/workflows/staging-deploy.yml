@@ -1,0 +1,67 @@
+name: Staging Deploy
+
+on:
+  push:
+    branches:
+      - "release/**"
+  workflow_dispatch:
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        if: ${{ secrets.STAGING_KUBECONFIG != '' }}
+        run: |
+          mkdir -p "${HOME}/.kube"
+          echo "${STAGING_KUBECONFIG}" | base64 --decode > "${HOME}/.kube/config"
+        env:
+          STAGING_KUBECONFIG: ${{ secrets.STAGING_KUBECONFIG }}
+
+      - name: Deploy staging manifests
+        if: ${{ secrets.STAGING_KUBECONFIG != '' }}
+        run: kubectl apply -k k8s/overlays/staging
+
+      - name: Staging deploy secrets reminder
+        if: ${{ secrets.STAGING_KUBECONFIG == '' }}
+        run: echo "Set STAGING_KUBECONFIG secret to enable automated staging deploy."
+
+  seed-staging-data:
+    runs-on: ubuntu-latest
+    environment: staging
+    needs: deploy-staging
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Seed staging database
+        if: ${{ secrets.STAGING_DATABASE_URL != '' }}
+        run: python -m src.seed_staging
+        env:
+          ENVIRONMENT: staging
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          JWT_SECRET_KEY: ${{ secrets.STAGING_JWT_SECRET_KEY }}
+          WEBHOOK_SECRET_KEY: ${{ secrets.STAGING_WEBHOOK_SECRET_KEY }}
+          STORAGE_SECRET_KEY: ${{ secrets.STAGING_STORAGE_SECRET_KEY }}
+
+      - name: Staging seed secrets reminder
+        if: ${{ secrets.STAGING_DATABASE_URL == '' }}
+        run: echo "Set STAGING_DATABASE_URL and related staging secrets to enable seed step."
