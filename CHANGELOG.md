@@ -1,3 +1,15 @@
+# [1.6.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.5.0...v1.6.0) (2026-04-24)
+
+
+### Bug Fixes
+
+* resolve lint errors and add missing icon definitions ([ea7df54](https://github.com/ChaoLing140/StellarInsure/commit/ea7df54fb2ac82cdd9f159cd84288f5c7600dd65))
+
+
+### Features
+
+* implement status pills, sortable policy table, onboarding checklist, and withdrawal flow ([4629294](https://github.com/ChaoLing140/StellarInsure/commit/4629294d89f632b421bc50ae2d3a78f09f39473c))
+
 # [1.5.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.4.0...v1.5.0) (2026-04-24)
 
 
