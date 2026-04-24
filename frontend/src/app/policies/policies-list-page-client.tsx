@@ -175,6 +175,7 @@ function PolicyCard({ policy }: { policy: Policy }) {
 
 export default function PoliciesListPageClient() {
   const { t } = useAppTranslation();
+  const { t } = useAppTranslation();
   const [statusFilter, setStatusFilter] = useState<PolicyStatus>("all");
   const [typeFilter, setTypeFilter] = useState<PolicyType>("all");
   const [sortBy, setSortBy] = useState<SortBy>("date");
@@ -298,12 +299,9 @@ export default function PoliciesListPageClient() {
   return (
     <main id="main-content" className="policy-page">
       <div className="section-header">
-        <span className="eyebrow">My Policies</span>
-        <h1 id="policies-title">Your Insurance Policies</h1>
-        <p>
-          Manage your active parametric insurance policies, view coverage details,
-          and track claim status with full transparency.
-        </p>
+        <span className="eyebrow">{t("policyList.eyebrow")}</span>
+        <h1 id="policies-title">{t("policyList.title")}</h1>
+        <p>{t("policyList.desc")}</p>
       </div>
 
       <div className="policy-filters motion-panel" role="search" aria-label="Filter and sort policies">
