@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.1.0...v1.2.0) (2026-04-24)
+
+
+### Features
+
+* policy list filter ([654ec50](https://github.com/ChaoLing140/StellarInsure/commit/654ec50663dff595c541d8503924bd53b52ed54a))
+
 # [1.1.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.0.0...v1.1.0) (2026-04-24)
 
 
