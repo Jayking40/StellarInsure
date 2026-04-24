@@ -1,3 +1,12 @@
+# [1.5.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.4.0...v1.5.0) (2026-04-24)
+
+
+### Features
+
+* **frontend:** add claim eligibility pre-check UI ([f94f20c](https://github.com/ChaoLing140/StellarInsure/commit/f94f20c2d5b3e1415ed1f5456dfd93766ad63b69)), closes [#93](https://github.com/ChaoLing140/StellarInsure/issues/93)
+* **frontend:** expand settings page with account, preferences, and security sections ([2f23a39](https://github.com/ChaoLing140/StellarInsure/commit/2f23a39fd39c4b5de3a7bd2d9acb2474bf0894e4)), closes [#99](https://github.com/ChaoLing140/StellarInsure/issues/99)
+* **frontend:** implement notifications center panel component ([8443dd6](https://github.com/ChaoLing140/StellarInsure/commit/8443dd62f4738e7028f4c6eebff3b6eacbcb63ed)), closes [#97](https://github.com/ChaoLing140/StellarInsure/issues/97)
+
 # [1.4.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.3.0...v1.4.0) (2026-04-24)
 
 
