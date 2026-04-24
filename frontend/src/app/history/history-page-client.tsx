@@ -3,6 +3,7 @@
 import React, { startTransition, useEffect, useDeferredValue, useMemo, useState } from "react";
 import Link from "next/link";
 
+import { useAppTranslation } from "@/i18n/provider";
 import { Icon } from "@/components/icon";
 import { Skeleton } from "@/components/skeleton";
 
@@ -93,6 +94,7 @@ function TypeBadge({ type }: { type: string }) {
 }
 
 export default function TransactionHistoryPage() {
+  const { t } = useAppTranslation();
   const [typeFilter, setTypeFilter] = useState<TxType>("all");
   const [statusFilter, setStatusFilter] = useState<TxStatus>("all");
   const [page, setPage] = useState(1);
@@ -154,18 +156,15 @@ export default function TransactionHistoryPage() {
   return (
     <main id="main-content" className="tx-history-page">
       <div className="section-header">
-        <span className="eyebrow">Transaction History</span>
-        <h1 id="tx-history-title">Your On-Chain Activity</h1>
-        <p>
-          View all your premium payments, claim payouts, and refunds with direct
-          links to Stellar Explorer.
-        </p>
+        <span className="eyebrow">{t("history.eyebrow")}</span>
+        <h1 id="tx-history-title">{t("history.title")}</h1>
+        <p>{t("history.desc")}</p>
       </div>
 
       <div className="tx-filters motion-panel" role="search" aria-label="Filter transactions">
         <div className="tx-filter-group">
           <label htmlFor="type-filter" className="tx-filter-label">
-            Type
+            {t("history.filters.type")}
           </label>
           <select
             id="type-filter"
@@ -173,7 +172,7 @@ export default function TransactionHistoryPage() {
             value={typeFilter}
             onChange={handleTypeChange}
           >
-            <option value="all">All Types</option>
+            <option value="all">{t("history.filters.allTypes")}</option>
             <option value="premium">Premium</option>
             <option value="payout">Payout</option>
             <option value="refund">Refund</option>
@@ -182,7 +181,7 @@ export default function TransactionHistoryPage() {
 
         <div className="tx-filter-group">
           <label htmlFor="status-filter" className="tx-filter-label">
-            Status
+            {t("history.filters.status")}
           </label>
           <select
             id="status-filter"
@@ -190,7 +189,7 @@ export default function TransactionHistoryPage() {
             value={statusFilter}
             onChange={handleStatusChange}
           >
-            <option value="all">All Statuses</option>
+            <option value="all">{t("history.filters.allStatuses")}</option>
             <option value="successful">Successful</option>
             <option value="pending">Pending</option>
             <option value="failed">Failed</option>
@@ -198,10 +197,10 @@ export default function TransactionHistoryPage() {
         </div>
 
         <p className="tx-result-count" aria-live="polite">
-          {total} transaction{total !== 1 ? "s" : ""} found
+          {total} {t("history.filters.found")}
         </p>
         <p className="tx-filtering" aria-live="polite" role="status">
-          {isFiltering ? "Updating results..." : "Filters are up to date."}
+          {isFiltering ? t("history.filters.updating") : t("history.filters.upToDate")}
         </p>
       </div>
 
@@ -216,12 +215,12 @@ export default function TransactionHistoryPage() {
           <table className="tx-table">
             <thead>
               <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Type</th>
-                <th scope="col">Amount (XLM)</th>
-                <th scope="col">Status</th>
-                <th scope="col">Hash</th>
-                <th scope="col">Details</th>
+                <th scope="col">{t("history.table.date")}</th>
+                <th scope="col">{t("history.table.type")}</th>
+                <th scope="col">{t("history.table.amount")}</th>
+                <th scope="col">{t("history.table.status")}</th>
+                <th scope="col">{t("history.table.hash")}</th>
+                <th scope="col">{t("history.table.details")}</th>
               </tr>
             </thead>
             <tbody>
@@ -243,7 +242,7 @@ export default function TransactionHistoryPage() {
           <span className="tx-empty-icon" aria-hidden="true">
             <Icon name="document" size="lg" tone="muted" />
           </span>
-          <p>No transactions match your filters.</p>
+          <p>{t("history.empty")}</p>
         </div>
       ) : (
         <div
@@ -256,12 +255,12 @@ export default function TransactionHistoryPage() {
             <table className="tx-table">
               <thead>
                 <tr>
-                  <th scope="col">Date</th>
-                  <th scope="col">Type</th>
-                  <th scope="col">Amount (XLM)</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Hash</th>
-                  <th scope="col">Details</th>
+                  <th scope="col">{t("history.table.date")}</th>
+                  <th scope="col">{t("history.table.type")}</th>
+                  <th scope="col">{t("history.table.amount")}</th>
+                  <th scope="col">{t("history.table.status")}</th>
+                  <th scope="col">{t("history.table.hash")}</th>
+                  <th scope="col">{t("history.table.details")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -281,12 +280,12 @@ export default function TransactionHistoryPage() {
           <table className="tx-table" aria-labelledby="tx-history-title">
             <thead>
               <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Type</th>
-                <th scope="col">Amount (XLM)</th>
-                <th scope="col">Status</th>
-                <th scope="col">Hash</th>
-                <th scope="col">Details</th>
+                <th scope="col">{t("history.table.date")}</th>
+                <th scope="col">{t("history.table.type")}</th>
+                <th scope="col">{t("history.table.amount")}</th>
+                <th scope="col">{t("history.table.status")}</th>
+                <th scope="col">{t("history.table.hash")}</th>
+                <th scope="col">{t("history.table.details")}</th>
               </tr>
             </thead>
             <tbody>

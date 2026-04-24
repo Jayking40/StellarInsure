@@ -4,6 +4,7 @@ import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 
 import { AmountInput, formatAssetAmount, parseAmountInput } from "@/components/amount-input";
+import { useAppTranslation } from "@/i18n/provider";
 import { Icon } from "@/components/icon";
 import { Skeleton, SkeletonText } from "@/components/skeleton";
 import { TransactionModal } from "@/components/transaction-modal";
@@ -120,6 +121,7 @@ export default function PolicyDetailPage({
 }: {
   params: { policyId: string };
 }) {
+  const { t } = useAppTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [record, setRecord] = useState<PolicyRecord | "error" | null>(null);
   const [formState, setFormState] = useState<FormState>(INITIAL_FORM);
@@ -324,7 +326,7 @@ export default function PolicyDetailPage({
     return (
       <main id="main-content" className="policy-page">
         <section className="policy-shell state-card" role="alert">
-          <span className="eyebrow">Policy Detail</span>
+          <span className="eyebrow">{t("policyDetail.eyebrow")}</span>
           <span className="state-icon" aria-hidden="true">
             <Icon name="alert" size="lg" tone="warning" />
           </span>
@@ -379,20 +381,17 @@ export default function PolicyDetailPage({
           <div>
             <span className="eyebrow">Policy Detail</span>
             <h1>{currentPolicy.title}</h1>
-            <p>
-              Print-ready policy and claim details with a mobile-friendly assistance form for
-              follow-up review.
-            </p>
+            <p>{t("policyDetail.desc")}</p>
           </div>
           <div className="policy-header__actions print-hidden">
             <button className="cta-primary" type="button" onClick={() => setIsPayModalOpen(true)}>
-              Pay Premium
+              {t("policyDetail.actions.payPremium")}
             </button>
             <button className="cta-secondary" type="button" onClick={() => window.print()}>
-              Print
+              {t("policyDetail.actions.print")}
             </button>
             <Link className="cta-secondary" href="/history">
-              Back to history
+              {t("policyDetail.actions.back")}
             </Link>
           </div>
         </header>
@@ -401,7 +400,7 @@ export default function PolicyDetailPage({
           <section className="hero-card motion-panel" aria-labelledby={summaryId}>
             <div className="policy-summary__header">
               <div>
-                <p className="metadata-label">Policy reference</p>
+                <p className="metadata-label">{t("policyDetail.summary.reference")}</p>
                 <div className="policy-summary__title">
                   <Icon name="shield" size="md" tone="accent" />
                   <h2 id={summaryId}>{currentPolicy.id}</h2>
@@ -412,62 +411,62 @@ export default function PolicyDetailPage({
 
             <dl className="definition-grid">
               <div>
-                <dt>Coverage</dt>
+                <dt>{t("policyDetail.summary.coverage")}</dt>
                 <dd>{formatAssetAmount(currentPolicy.coverageAmount)} XLM</dd>
               </div>
               <div>
-                <dt>Premium</dt>
+                <dt>{t("policyDetail.summary.premium")}</dt>
                 <dd>{formatAssetAmount(currentPolicy.premium)} XLM</dd>
               </div>
               <div>
-                <dt>Type</dt>
+                <dt>{t("policyDetail.summary.type")}</dt>
                 <dd>{currentPolicy.type}</dd>
               </div>
               <div>
-                <dt>Destination</dt>
+                <dt>{t("policyDetail.summary.destination")}</dt>
                 <dd>{currentPolicy.payoutDestination}</dd>
               </div>
               <div>
-                <dt>Start date</dt>
+                <dt>{t("policyDetail.summary.startDate")}</dt>
                 <dd>{formatDate(currentPolicy.startDate)}</dd>
               </div>
               <div>
-                <dt>End date</dt>
+                <dt>{t("policyDetail.summary.endDate")}</dt>
                 <dd>{formatDate(currentPolicy.endDate)}</dd>
               </div>
             </dl>
 
             <div className="policy-copy-block">
-              <h3>Trigger condition</h3>
+              <h3>{t("policyDetail.summary.triggerCondition")}</h3>
               <p>{currentPolicy.triggerCondition}</p>
             </div>
 
             <div className="policy-copy-block">
-              <h3>Claim window</h3>
+              <h3>{t("policyDetail.summary.claimWindow")}</h3>
               <p>{currentPolicy.claimWindow}</p>
             </div>
           </section>
 
           <aside className="panel motion-panel" aria-labelledby={assistId}>
-            <p className="metadata-label">Print note</p>
+            <p className="metadata-label">{t("policyDetail.note.label")}</p>
             <div className="panel-heading">
               <Icon name="document" size="md" tone="accent" />
-              <h2 id={assistId}>Export summary</h2>
+              <h2 id={assistId}>{t("policyDetail.note.title")}</h2>
             </div>
             <p>{currentPolicy.note}</p>
             <ul className="policy-checklist">
-              <li>Optimized for A4 and letter print layouts.</li>
-              <li>Action controls are automatically hidden when printing.</li>
-              <li>Claim evidence and status remain readable in grayscale.</li>
+              <li>{t("policyDetail.note.item1")}</li>
+              <li>{t("policyDetail.note.item2")}</li>
+              <li>{t("policyDetail.note.item3")}</li>
             </ul>
           </aside>
         </div>
 
         <section className="panel motion-panel" aria-labelledby={claimId}>
           <div className="section-header policy-subsection">
-            <span className="eyebrow">Claims</span>
-            <h2 id={claimId}>Claim activity</h2>
-            <p>Review status history before exporting or sending the policy packet.</p>
+            <span className="eyebrow">{t("policyDetail.claims.eyebrow")}</span>
+            <h2 id={claimId}>{t("policyDetail.claims.title")}</h2>
+            <p>{t("policyDetail.claims.desc")}</p>
           </div>
 
           {currentPolicy.claims.length === 0 ? (
@@ -475,11 +474,8 @@ export default function PolicyDetailPage({
               <span className="state-icon" aria-hidden="true">
                 <Icon name="clock" size="lg" tone="muted" />
               </span>
-              <h3>No claims filed yet</h3>
-              <p className="state-copy">
-                This policy is active and ready for automated review, but there are no claim
-                records to print yet.
-              </p>
+              <h3>{t("policyDetail.claims.emptyTitle")}</h3>
+              <p className="state-copy">{t("policyDetail.claims.emptyDesc")}</p>
             </div>
           ) : (
             <div className="claim-list" role="list" aria-label="Claim history">
@@ -487,22 +483,22 @@ export default function PolicyDetailPage({
                 <article key={claim.id} className="claim-card" role="listitem">
                   <div className="claim-card__header">
                     <div>
-                      <p className="metadata-label">Claim reference</p>
+                      <p className="metadata-label">{t("policyDetail.claims.reference")}</p>
                       <h3>{claim.id}</h3>
                     </div>
                     <span className={statusClassName(claim.status)}>{claim.status}</span>
                   </div>
                   <dl className="definition-grid definition-grid--compact">
                     <div>
-                      <dt>Submitted</dt>
+                      <dt>{t("policyDetail.claims.submitted")}</dt>
                       <dd>{formatDate(claim.submittedAt)}</dd>
                     </div>
                     <div>
-                      <dt>Requested amount</dt>
+                      <dt>{t("policyDetail.claims.amount")}</dt>
                       <dd>{formatAssetAmount(claim.amount)} XLM</dd>
                     </div>
                     <div>
-                      <dt>Evidence bundle</dt>
+                      <dt>{t("policyDetail.claims.evidence")}</dt>
                       <dd>{claim.evidence}</dd>
                     </div>
                   </dl>
