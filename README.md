@@ -238,6 +238,21 @@ This will start:
 
 ---
 
+## Kubernetes Deployment
+
+Production-ready Kubernetes manifests are available under [`k8s/`](./k8s):
+- `k8s/base`: backend/frontend deployments and services, PostgreSQL and Redis statefulsets, ingress with TLS, config and secret templates, and backend HPA.
+- `k8s/overlays/staging`: staging-specific hostnames, image tags, and feature flags.
+- `k8s/overlays/production`: production overlay.
+
+Example apply commands:
+```bash
+kubectl apply -k k8s/overlays/staging
+kubectl apply -k k8s/overlays/production
+```
+
+---
+
 ## Creating a Policy
 
 ### Via CLI
@@ -316,6 +331,8 @@ Factors affecting premium:
 - [Oracle Integration Guide](./docs/ORACLE.md)
 - [API Reference](./docs/API.md)
 - [Frontend Guide](./docs/FRONTEND.md)
+- [Kubernetes Deployment Guide](./docs/KUBERNETES.md)
+- [Staging Environment Guide](./docs/STAGING.md)
 
 ### Smart contract indexing
 

@@ -62,6 +62,13 @@ class TestSettingsValidation:
         assert s.webhook_max_retries == 3
         assert s.webhook_delivery_timeout == 30
 
+    def test_feature_flags_defaults(self):
+        from src.config import Settings
+        s = Settings(database_url="sqlite://", jwt_secret_key="k")
+        assert s.feature_flags["oracle_v2"] is False
+        assert s.feature_flags["claim_auto_approval"] is False
+        assert s.feature_flags["pool_rebalancing"] is False
+
 
 class TestSecretsNotLogged:
     """Test that sensitive fields are redacted in logs."""
