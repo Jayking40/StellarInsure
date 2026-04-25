@@ -1,6 +1,12 @@
 "use client";
 
-import React, { startTransition, useEffect, useDeferredValue, useMemo, useState } from "react";
+import React, {
+  startTransition,
+  useEffect,
+  useDeferredValue,
+  useMemo,
+  useState,
+} from "react";
 import Link from "next/link";
 
 import { Icon, type IconName } from "@/components/icon";
@@ -8,9 +14,16 @@ import { Skeleton } from "@/components/skeleton";
 import { StatusPill } from "@/components/status-pill";
 import { PolicyTable } from "@/components/policy-table";
 import { useAppTranslation } from "@/i18n/provider";
+import { useOptimisticList } from "@/hooks/use-optimistic-list";
 
 type PolicyStatus = "active" | "pending" | "expired" | "claimed" | "all";
-type PolicyType = "weather" | "flight" | "smart-contract" | "asset" | "health" | "all";
+type PolicyType =
+  | "weather"
+  | "flight"
+  | "smart-contract"
+  | "asset"
+  | "health"
+  | "all";
 type SortBy = "date" | "coverage";
 
 interface FilterState {
@@ -93,7 +106,10 @@ const MOCK_POLICIES: Policy[] = [
   },
 ];
 
-const POLICY_TYPE_DISPLAY: Record<PolicyType, { label: string; icon: IconName }> = {
+const POLICY_TYPE_DISPLAY: Record<
+  PolicyType,
+  { label: string; icon: IconName }
+> = {
   weather: { label: "Weather", icon: "shield" },
   flight: { label: "Flight Delay", icon: "clock" },
   "smart-contract": { label: "Smart Contract", icon: "spark" },
@@ -102,7 +118,10 @@ const POLICY_TYPE_DISPLAY: Record<PolicyType, { label: string; icon: IconName }>
   all: { label: "All Types", icon: "shield" },
 };
 
-const POLICY_STATUS_DISPLAY: Record<Exclude<PolicyStatus, "all">, { label: string; tone: "success" | "warning" | "danger" }> = {
+const POLICY_STATUS_DISPLAY: Record<
+  Exclude<PolicyStatus, "all">,
+  { label: string; tone: "success" | "warning" | "danger" }
+> = {
   active: { label: "Active", tone: "success" },
   pending: { label: "Pending", tone: "warning" },
   claimed: { label: "Claimed", tone: "success" },
@@ -123,12 +142,51 @@ function formatCurrency(amount: number): string {
 
 // Internal StatusBadge removed in favor of StatusPill
 
-function PolicyCard({ policy }: { policy: Policy }) {
+function PolicyCard({
+  policy,
+  optimisticStatus = "confirmed",
+  onDismissError,
+}: {
+  policy: Policy;
+  optimisticStatus?: "confirmed" | "pending" | "error";
+  onDismissError?: () => void;
+}) {
   const typeDisplay = POLICY_TYPE_DISPLAY[policy.type as PolicyType];
 
   return (
-    <Link href={`/policies/${policy.id}`} className="policy-card motion-panel">
+    <Link
+      href={optimisticStatus === "pending" ? "#" : `/policies/${policy.id}`}
+      className={`policy-card motion-panel${optimisticStatus === "pending" ? " policy-card--optimistic" : ""}${optimisticStatus === "error" ? " policy-card--error" : ""}`}
+      aria-busy={optimisticStatus === "pending"}
+    >
       <article className="policy-card__inner">
+        {optimisticStatus === "pending" && (
+          <div className="policy-card__optimistic-badge" aria-live="polite">
+            <Icon name="clock" size="sm" tone="warning" aria-hidden="true" />
+            <span>Saving…</span>
+          </div>
+        )}
+        {optimisticStatus === "error" && (
+          <div
+            className="policy-card__optimistic-badge policy-card__optimistic-badge--error"
+            aria-live="polite"
+          >
+            <Icon name="alert" size="sm" tone="danger" aria-hidden="true" />
+            <span>Failed to save</span>
+            {onDismissError && (
+              <button
+                className="policy-card__dismiss-error"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onDismissError();
+                }}
+                aria-label="Dismiss error"
+              >
+                <Icon name="close" size="sm" tone="danger" />
+              </button>
+            )}
+          </div>
+        )}
         <div className="policy-card__header">
           <div className="policy-card__title-group">
             <h3>{policy.title}</h3>
@@ -142,11 +200,15 @@ function PolicyCard({ policy }: { policy: Policy }) {
         <div className="policy-card__details">
           <div className="policy-card__detail-row">
             <span className="policy-card__label">Coverage</span>
-            <span className="policy-card__value">{formatCurrency(policy.coverageAmount)}</span>
+            <span className="policy-card__value">
+              {formatCurrency(policy.coverageAmount)}
+            </span>
           </div>
           <div className="policy-card__detail-row">
             <span className="policy-card__label">Premium</span>
-            <span className="policy-card__value">{formatCurrency(policy.premiumAmount)}</span>
+            <span className="policy-card__value">
+              {formatCurrency(policy.premiumAmount)}
+            </span>
           </div>
         </div>
 
@@ -156,7 +218,9 @@ function PolicyCard({ policy }: { policy: Policy }) {
               <Icon name={typeDisplay.icon} size="sm" tone="muted" />
               {typeDisplay.label}
             </span>
-            <span className="policy-card__date">{formatDate(policy.createdAt)}</span>
+            <span className="policy-card__date">
+              {formatDate(policy.createdAt)}
+            </span>
           </div>
           <span className="policy-card__cta" aria-hidden="true">
             <Icon name="arrow-up-right" size="sm" tone="accent" />
@@ -178,6 +242,15 @@ export default function PoliciesListPageClient() {
   const [endDate, setEndDate] = useState<string>("");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [isLoading, setIsLoading] = useState(true);
+
+  // Optimistic list — new policies appear immediately before server confirmation
+  const {
+    items: optimisticPolicies,
+    addOptimistic,
+    confirmItem,
+    rejectItem,
+    removeItem,
+  } = useOptimisticList<Policy>(MOCK_POLICIES);
 
   const deferredStatusFilter = useDeferredValue(statusFilter);
   const deferredTypeFilter = useDeferredValue(typeFilter);
@@ -202,9 +275,13 @@ export default function PoliciesListPageClient() {
   }, []);
 
   const filtered = useMemo(() => {
-    return MOCK_POLICIES.filter((policy) => {
-      const matchStatus = deferredStatusFilter === "all" || policy.status === deferredStatusFilter;
-      const matchType = deferredTypeFilter === "all" || policy.type === deferredTypeFilter;
+    return optimisticPolicies.filter((entry) => {
+      const policy = entry.data;
+      const matchStatus =
+        deferredStatusFilter === "all" ||
+        policy.status === deferredStatusFilter;
+      const matchType =
+        deferredTypeFilter === "all" || policy.type === deferredTypeFilter;
       const matchCoverage =
         policy.coverageAmount >= deferredMinCoverage &&
         policy.coverageAmount <= deferredMaxCoverage;
@@ -224,6 +301,7 @@ export default function PoliciesListPageClient() {
       return matchStatus && matchType && matchCoverage && matchDateRange;
     });
   }, [
+    optimisticPolicies,
     deferredStatusFilter,
     deferredTypeFilter,
     deferredMinCoverage,
@@ -237,10 +315,11 @@ export default function PoliciesListPageClient() {
     if (deferredSortBy === "date") {
       copy.sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.data.createdAt).getTime() -
+          new Date(a.data.createdAt).getTime(),
       );
     } else if (deferredSortBy === "coverage") {
-      copy.sort((a, b) => b.coverageAmount - a.coverageAmount);
+      copy.sort((a, b) => b.data.coverageAmount - a.data.coverageAmount);
     }
     return copy;
   }, [filtered, deferredSortBy]);
@@ -314,7 +393,11 @@ export default function PoliciesListPageClient() {
         </div>
       </div>
 
-      <div className="policy-filters motion-panel" role="search" aria-label="Filter and sort policies">
+      <div
+        className="policy-filters motion-panel"
+        role="search"
+        aria-label="Filter and sort policies"
+      >
         <div className="policy-filter-group">
           <label htmlFor="status-filter" className="policy-filter-label">
             {t("policies.filters.status")}
@@ -419,18 +502,31 @@ export default function PoliciesListPageClient() {
             onChange={handleSortChange}
           >
             <option value="date">{t("policies.filters.newestFirst")}</option>
-            <option value="coverage">{t("policies.filters.highestCoverage")}</option>
+            <option value="coverage">
+              {t("policies.filters.highestCoverage")}
+            </option>
           </select>
         </div>
       </div>
 
       {isLoading ? (
-        <div className="policy-grid motion-panel" role="region" aria-label="Loading policies" aria-busy="true">
+        <div
+          className="policy-grid motion-panel"
+          role="region"
+          aria-label="Loading policies"
+          aria-busy="true"
+        >
           {Array.from({ length: 2 }).map((_, i) => (
             <div key={`sk-${i}`} className="policy-card--skeleton">
-              <Skeleton style={{ height: "24px", width: "100%", marginBottom: "12px" }} />
-              <Skeleton style={{ height: "16px", width: "80%", marginBottom: "16px" }} />
-              <Skeleton style={{ height: "14px", width: "60%", marginBottom: "8px" }} />
+              <Skeleton
+                style={{ height: "24px", width: "100%", marginBottom: "12px" }}
+              />
+              <Skeleton
+                style={{ height: "16px", width: "80%", marginBottom: "16px" }}
+              />
+              <Skeleton
+                style={{ height: "14px", width: "60%", marginBottom: "8px" }}
+              />
               <Skeleton style={{ height: "14px", width: "70%" }} />
             </div>
           ))}
@@ -447,14 +543,27 @@ export default function PoliciesListPageClient() {
           </Link>
         </div>
       ) : viewMode === "grid" ? (
-        <div className={`policy-grid motion-panel ${isFiltering ? "policy-grid--loading" : ""}`}>
-          {sorted.map((policy) => (
-            <PolicyCard key={policy.id} policy={policy} />
+        <div
+          className={`policy-grid motion-panel ${isFiltering ? "policy-grid--loading" : ""}`}
+        >
+          {sorted.map((entry) => (
+            <PolicyCard
+              key={entry.data.id}
+              policy={entry.data}
+              optimisticStatus={entry.optimisticStatus}
+              onDismissError={
+                entry.optimisticStatus === "error"
+                  ? () => removeItem(entry.data.id)
+                  : undefined
+              }
+            />
           ))}
         </div>
       ) : (
-        <div className={`policy-table-view motion-panel ${isFiltering ? "policy-grid--loading" : ""}`}>
-          <PolicyTable policies={sorted as any} />
+        <div
+          className={`policy-table-view motion-panel ${isFiltering ? "policy-grid--loading" : ""}`}
+        >
+          <PolicyTable policies={sorted.map((e) => e.data) as any} />
         </div>
       )}
     </main>
