@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/ChaoLing140/StellarInsure/compare/v1.9.0...v1.9.1) (2026-04-25)
+
+
+### Bug Fixes
+
+* **frontend:** improve skip-link focus handling ([#144](https://github.com/ChaoLing140/StellarInsure/issues/144)) ([47ac771](https://github.com/ChaoLing140/StellarInsure/commit/47ac771b0a2064cdae55dedffc12f9287a28e4c5))
+
 # [1.9.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.8.0...v1.9.0) (2026-04-25)
 
 
