@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAppTranslation } from "@/i18n/provider";
 import { Icon } from "@/components/icon";
 import { Skeleton } from "@/components/skeleton";
+import { TransactionRetryUI } from "@/components/transaction-retry-ui";
 
 type TxType = "premium" | "payout" | "refund" | "all";
 type TxStatus = "successful" | "pending" | "failed" | "all";
@@ -100,6 +101,7 @@ export default function TransactionHistoryPage() {
   const [page, setPage] = useState(1);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [retryingTransactionId, setRetryingTransactionId] = useState<number | null>(null);
   const deferredTypeFilter = useDeferredValue(typeFilter);
   const deferredStatusFilter = useDeferredValue(statusFilter);
   const isFiltering =
@@ -150,6 +152,20 @@ export default function TransactionHistoryPage() {
       setStatusFilter(value);
       setPage(1);
       setExpandedId(null);
+    });
+  }
+
+  async function handleRetryTransaction(transactionId: number) {
+    // Simulate retry API call
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        // Simulate 80% success rate
+        if (Math.random() > 0.2) {
+          resolve(undefined);
+        } else {
+          reject(new Error("Network error: Unable to connect to Stellar network"));
+        }
+      }, 1500);
     });
   }
 
@@ -346,6 +362,38 @@ export default function TransactionHistoryPage() {
                     <tr className="tx-detail-row" aria-label="Transaction detail">
                       <td colSpan={6}>
                         <div className="tx-detail-panel">
+                          {tx.status === "failed" && retryingTransactionId === tx.id && (
+                            <div className="tx-detail-retry-section">
+                              <TransactionRetryUI
+                                transactionId={tx.id}
+                                transactionHash={tx.transaction_hash}
+                                transactionType={tx.transaction_type}
+                                amount={tx.amount}
+                                onRetry={handleRetryTransaction}
+                                onDismiss={() => setRetryingTransactionId(null)}
+                              />
+                            </div>
+                          )}
+                          {tx.status === "failed" && retryingTransactionId !== tx.id && (
+                            <div className="tx-detail-retry-prompt">
+                              <div className="tx-detail-retry-content">
+                                <Icon name="alert-circle" size="md" tone="danger" aria-hidden="true" />
+                                <div>
+                                  <p className="tx-detail-retry-message">
+                                    This transaction failed. Would you like to retry it?
+                                  </p>
+                                </div>
+                              </div>
+                              <button
+                                className="tx-detail-retry-action"
+                                onClick={() => setRetryingTransactionId(tx.id)}
+                                aria-label={`Retry transaction ${tx.id}`}
+                              >
+                                <Icon name="refresh-cw" size="sm" aria-hidden="true" />
+                                Start Retry
+                              </button>
+                            </div>
+                          )}
                           <div className="tx-detail-grid">
                             <div>
                               <span className="tx-detail-label">Transaction ID</span>
